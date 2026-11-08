@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+.git/
+.github/
+RaceDayApi/
+RaceDayApi.Tests/
+docs/
+*.md
+Dockerfile
+.dockerignore
