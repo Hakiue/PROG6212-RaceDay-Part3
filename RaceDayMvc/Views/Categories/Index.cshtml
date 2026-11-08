@@ -1,0 +1,73 @@
+@model CategoriesViewModel
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="container py-4">
+    <a class="back-link" asp-controller="ManageEvents" asp-action="Index"><i class="bi bi-arrow-left"></i> My events</a>
+    <h1 class="rd-heading mt-2 mb-1">Categories</h1>
+    <p class="text-muted mb-4">
+        <strong>@Model.Event.Name</strong> · @ViewHelpers.EventDate(Model.Event.EventDate) ·
+        Participants pick one category when they enter. Age limits and distance are optional.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            @if (!Model.Categories.Any())
+            {
+                <div class="empty-state mt-0">
+                    <i class="bi bi-tags"></i>
+                    <h2 class="rd-heading">No categories yet</h2>
+                    <p class="text-muted mb-0">Participants can't enter until you add at least one category.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive rd-panel">
+                    <table class="table rd-table align-middle mb-0">
+                        <thead><tr><th>Category</th><th>Ages</th><th>Distance</th><th class="text-end">Actions</th></tr></thead>
+                        <tbody>
+                            @foreach (var c in Model.Categories)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@c.Name</td>
+                                    <td>@ViewHelpers.CategoryAges(c)</td>
+                                    <td>@(c.DistanceKm is decimal d ? d.ToString("0.##") + " km" : "Event distance")</td>
+                                    <td class="text-end text-nowrap">
+                                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-eventId="@Model.Event.EventId" asp-route-id="@c.CategoryId">Edit</a>
+                                        <form asp-action="Delete" method="post" class="d-inline"
+                                              onsubmit="return confirm('Remove this category?');">
+                                            <input type="hidden" name="eventId" value="@Model.Event.EventId" />
+                                            <input type="hidden" name="id" value="@c.CategoryId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Remove @c.Name"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            <div class="mt-3 d-flex flex-wrap gap-2">
+                <a class="btn btn-outline-secondary" asp-controller="EventEnrolments" asp-action="Index" asp-route-eventId="@Model.Event.EventId"><i class="bi bi-people me-1"></i>View entries</a>
+                <a class="btn btn-outline-secondary" asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.Event.EventId"><i class="bi bi-pencil me-1"></i>Edit event</a>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="rd-panel p-4">
+                <h2 class="h5 mb-3">Add a category</h2>
+                <form asp-action="Create" method="post" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+                    <partial name="_CategoryForm" model="Model.Form" />
+                    <button type="submit" class="btn btn-rd mt-3"><i class="bi bi-plus-lg me-1"></i>Add category</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
