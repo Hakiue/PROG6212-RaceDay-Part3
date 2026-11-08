@@ -130,10 +130,4 @@ The Dockerfile is multi-stage: the .NET 9 SDK image restores (cached layer) and 
 - "Publish" results: a result is visible to the participant as soon as the Organiser saves it, so saving and publishing are one step.
 - Database differences from the Part 1 script are listed in the Part 2 README.
 
-## AI use disclosure
 
-An AI assistant (Claude) was used to plan and draft parts of this project, including code for the API and MVC app, the Dockerfile and the CI workflow. I reviewed, ran and tested the work and can explain how it works. The video voiceover is my own voice.
-
-## Student
-
-Name: `YOUR NAME` · Student number: `YOUR NUMBER`
