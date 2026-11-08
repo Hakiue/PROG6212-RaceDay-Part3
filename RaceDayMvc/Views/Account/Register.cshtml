@@ -1,0 +1,75 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Sign up";
+}
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="auth-side d-none d-md-flex">
+            <i class="bi bi-flag-fill"></i>
+            <h2>Join RaceDay</h2>
+            <p>Enter South Africa's road events, or run your own. It takes less than a minute.</p>
+        </div>
+        <div class="auth-form">
+            <h1 class="rd-heading mb-1">Create your account</h1>
+            <p class="text-muted mb-4">Tell us how you'll use RaceDay.</p>
+
+            <form asp-action="Register" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                <div class="role-picker mb-4">
+                    <label class="role-option">
+                        <input type="radio" asp-for="Role" value="Participant" />
+                        <span class="role-card"><i class="bi bi-person-walking"></i><strong>Participant</strong><small>Enter events and track your results</small></span>
+                    </label>
+                    <label class="role-option">
+                        <input type="radio" asp-for="Role" value="Organiser" />
+                        <span class="role-card"><i class="bi bi-clipboard2-check-fill"></i><strong>Organiser</strong><small>Create events and capture results</small></span>
+                    </label>
+                </div>
+                <span asp-validation-for="Role" class="text-danger small"></span>
+
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label asp-for="FirstName" class="form-label"></label>
+                        <input asp-for="FirstName" class="form-control" autocomplete="given-name" />
+                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label asp-for="LastName" class="form-label"></label>
+                        <input asp-for="LastName" class="form-control" autocomplete="family-name" />
+                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="PhoneNumber" class="form-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" autocomplete="tel" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label asp-for="ConfirmPassword" class="form-label"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-rd btn-lg w-100 mt-4">Create account</button>
+            </form>
+
+            <p class="mt-4 mb-0 text-center">Already have an account? <a asp-action="Login">Log in</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
