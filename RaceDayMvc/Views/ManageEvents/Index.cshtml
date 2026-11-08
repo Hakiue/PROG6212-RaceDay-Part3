@@ -1,0 +1,68 @@
+@model List<EventSummary>
+@{
+    ViewData["Title"] = "My events";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+        <div>
+            <h1 class="rd-heading mb-1">My events</h1>
+            <p class="text-muted mb-0">Create, edit and delete your events, and manage who has entered.</p>
+        </div>
+        <a class="btn btn-rd" asp-action="Create"><i class="bi bi-plus-lg me-1"></i>Create event</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-flag"></i>
+            <h2 class="rd-heading">No events yet</h2>
+            <p class="text-muted">Create an event to get started.</p>
+            <a class="btn btn-rd" asp-action="Create">Create event</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive rd-panel">
+            <table class="table rd-table align-middle mb-0">
+                <thead>
+                    <tr><th></th><th>Event</th><th>Date</th><th>Location</th><th class="text-center">Entries</th><th class="text-end">Actions</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model)
+                    {
+                        <tr>
+                            <td style="width:84px">
+                                @if (!string.IsNullOrEmpty(e.BannerImageUrl))
+                                {
+                                    <img class="thumb" src="@e.BannerImageUrl" alt="" loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div class="thumb thumb-empty @ViewHelpers.TypeClass(e.EventTypeName)"><i class="bi @ViewHelpers.TypeIcon(e.EventTypeName)"></i></div>
+                                }
+                            </td>
+                            <td>
+                                <a class="fw-semibold" asp-controller="Events" asp-action="Details" asp-route-id="@e.EventId">@e.Name</a><br />
+                                <span class="small text-muted">@e.EventTypeName · @e.DistanceKm.ToString("0.##") km</span>
+                            </td>
+                            <td>@ViewHelpers.EventDate(e.EventDate)</td>
+                            <td>@e.Location</td>
+                            <td class="text-center"><span class="position-badge">@e.EnrolmentCount</span></td>
+                            <td class="text-end text-nowrap">
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="Categories" asp-action="Index" asp-route-eventId="@e.EventId">Categories</a>
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="EventEnrolments" asp-action="Index" asp-route-eventId="@e.EventId">Entries</a>
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="EventResults" asp-action="Index" asp-route-eventId="@e.EventId">Results</a>
+                                <a class="btn btn-sm btn-rd" asp-action="Edit" asp-route-id="@e.EventId">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@e.EventId" method="post" class="d-inline"
+                                      onsubmit="return confirm('Delete this event? This cannot be undone.');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Delete @e.Name"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
