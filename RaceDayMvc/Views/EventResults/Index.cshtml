@@ -1,0 +1,80 @@
+@model EventResultsViewModel
+@{
+    ViewData["Title"] = "Results";
+    var recorded = Model.Rows.Count(r => r.Result is not null);
+}
+
+<div class="container py-4">
+    <a class="back-link" asp-controller="ManageEvents" asp-action="Index"><i class="bi bi-arrow-left"></i> My events</a>
+    <h1 class="rd-heading mt-2 mb-1">Results</h1>
+    <p class="text-muted mb-4">
+        <strong>@Model.Event.Name</strong> · @ViewHelpers.EventDate(Model.Event.EventDate) ·
+        @recorded of @Model.Rows.Count results captured
+    </p>
+
+    @if (!Model.HasHappened)
+    {
+        <div class="alert alert-warning rd-alert">
+            <i class="bi bi-exclamation-triangle me-1"></i>This event hasn't taken place yet. Results are normally entered afterwards.
+        </div>
+    }
+
+    <p class="text-muted small">Saving a result publishes it: the participant sees it on their My results page straight away. Entries you have cancelled aren't listed.</p>
+
+    @if (!Model.Rows.Any())
+    {
+        <div class="empty-state mt-3">
+            <i class="bi bi-stopwatch"></i>
+            <h2 class="rd-heading">No participants to record</h2>
+            <p class="text-muted mb-0">Results can be captured once participants have entered this event.</p>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-3">
+            @foreach (var row in Model.Rows)
+            {
+                var e = row.Enrolment;
+                var r = row.Result;
+                <div class="rd-panel p-3 result-row">
+                    <form asp-action="Save" method="post" class="row g-3 align-items-end" novalidate>
+                        <input type="hidden" name="eventId" value="@Model.Event.EventId" />
+                        <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
+                        @if (r is not null)
+                        {
+                            <input type="hidden" name="resultId" value="@r.ResultId" />
+                        }
+
+                        <div class="col-lg-4">
+                            <div class="fw-semibold">@e.ParticipantName</div>
+                            <div class="small text-muted">@e.CategoryName</div>
+                            <span class="status-badge @ViewHelpers.StatusClass(e.Status) mt-1"><i class="bi @ViewHelpers.StatusIcon(e.Status)"></i> @e.Status</span>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <label class="form-label" for="time-@e.EnrolmentId">Finish time (hh:mm:ss)</label>
+                            <input id="time-@e.EnrolmentId" name="finishTime" class="form-control time-cell" placeholder="01:45:30"
+                                   value="@(r is null ? "" : ViewHelpers.FormatTime(r.FinishTime))" inputmode="numeric" autocomplete="off" />
+                        </div>
+                        <div class="col-6 col-lg-2">
+                            <label class="form-label" for="pos-@e.EnrolmentId">Position</label>
+                            <input id="pos-@e.EnrolmentId" name="finishPosition" type="number" min="1" class="form-control"
+                                   placeholder="e.g. @Model.NextPosition" value="@(r?.FinishPosition)" />
+                        </div>
+                        <div class="col-lg-3 d-grid">
+                            <button type="submit" class="btn @(r is null ? "btn-rd" : "btn-outline-secondary")">
+                                @if (r is null)
+                                {
+                                    <span><i class="bi bi-send-check me-1"></i>Save &amp; publish</span>
+                                }
+                                else
+                                {
+                                    <span><i class="bi bi-check2-circle me-1"></i>Update result</span>
+                                }
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</div>

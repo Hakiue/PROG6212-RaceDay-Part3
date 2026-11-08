@@ -1,0 +1,81 @@
+@model EventEnrolmentsViewModel
+@{
+    ViewData["Title"] = "Entries";
+}
+
+<div class="container py-4">
+    <a class="back-link" asp-controller="ManageEvents" asp-action="Index"><i class="bi bi-arrow-left"></i> My events</a>
+    <h1 class="rd-heading mt-2 mb-1">Entries</h1>
+    <p class="text-muted mb-4"><strong>@Model.Event.Name</strong> · @ViewHelpers.EventDate(Model.Event.EventDate) · @Model.Event.Location</p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3"><div class="stat-tile"><span class="stat-number">@Model.Enrolments.Count</span><span class="stat-label">Total entries</span></div></div>
+        <div class="col-6 col-md-3"><div class="stat-tile tile-confirmed"><span class="stat-number">@Model.Count("Confirmed")</span><span class="stat-label">Confirmed</span></div></div>
+        <div class="col-6 col-md-3"><div class="stat-tile tile-pending"><span class="stat-number">@Model.Count("Pending")</span><span class="stat-label">Pending</span></div></div>
+        <div class="col-6 col-md-3"><div class="stat-tile tile-cancelled"><span class="stat-number">@Model.Count("Cancelled")</span><span class="stat-label">Cancelled</span></div></div>
+    </div>
+
+    @if (!Model.Enrolments.Any())
+    {
+        <div class="empty-state mt-0">
+            <i class="bi bi-people"></i>
+            <h2 class="rd-heading">No entries yet</h2>
+            <p class="text-muted mb-0">When participants enter this event they'll appear here.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive rd-panel">
+            <table class="table rd-table align-middle mb-0">
+                <thead>
+                    <tr><th>Participant</th><th>Category</th><th>Entered on</th><th>Status</th><th class="text-end">Change status</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Enrolments)
+                    {
+                        <tr>
+                            <td><span class="fw-semibold">@e.ParticipantName</span><br /><span class="small text-muted">@e.ParticipantEmail</span></td>
+                            <td>@e.CategoryName</td>
+                            <td>@ViewHelpers.ShortDate(e.EnrolmentDate)</td>
+                            <td><span class="status-badge @ViewHelpers.StatusClass(e.Status)"><i class="bi @ViewHelpers.StatusIcon(e.Status)"></i> @e.Status</span></td>
+                            <td class="text-end text-nowrap">
+                                @if (!string.Equals(e.Status, "Confirmed", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <form asp-action="SetStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="eventId" value="@Model.Event.EventId" />
+                                        <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
+                                        <input type="hidden" name="status" value="Confirmed" />
+                                        <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg me-1"></i>Confirm</button>
+                                    </form>
+                                }
+                                @if (string.Equals(e.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <form asp-action="SetStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="eventId" value="@Model.Event.EventId" />
+                                        <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
+                                        <input type="hidden" name="status" value="Pending" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">Reopen</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="SetStatus" method="post" class="d-inline"
+                                          onsubmit="return confirm('Cancel this entry?');">
+                                        <input type="hidden" name="eventId" value="@Model.Event.EventId" />
+                                        <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
+                                        <input type="hidden" name="status" value="Cancelled" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-x-lg me-1"></i>Cancel</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3">
+            <a class="btn btn-rd" asp-controller="EventResults" asp-action="Index" asp-route-eventId="@Model.Event.EventId"><i class="bi bi-stopwatch me-1"></i>Enter results</a>
+        </div>
+    }
+</div>
