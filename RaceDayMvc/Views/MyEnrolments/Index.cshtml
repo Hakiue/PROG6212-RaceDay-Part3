@@ -1,0 +1,41 @@
+@model List<EnrolmentItem>
+@{
+    ViewData["Title"] = "My entries";
+}
+
+<div class="container py-4">
+    <h1 class="rd-heading mb-1">My entries</h1>
+    <p class="text-muted mb-4">Every event you've entered, and where each entry stands.</p>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-clipboard2-x"></i>
+            <h2 class="rd-heading">No entries yet</h2>
+            <p class="text-muted">Find an event and enter it. It will show up here.</p>
+            <a class="btn btn-rd" asp-controller="Home" asp-action="Index">Browse events</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive rd-panel">
+            <table class="table rd-table align-middle mb-0">
+                <thead>
+                    <tr><th>Event</th><th>Date</th><th>Category</th><th>Entered on</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model)
+                    {
+                        <tr>
+                            <td><a class="fw-semibold" asp-controller="Events" asp-action="Details" asp-route-id="@e.EventId">@e.EventName</a></td>
+                            <td>@ViewHelpers.ShortDate(e.EventDate)</td>
+                            <td>@e.CategoryName</td>
+                            <td>@ViewHelpers.ShortDate(e.EnrolmentDate)</td>
+                            <td><span class="status-badge @ViewHelpers.StatusClass(e.Status)"><i class="bi @ViewHelpers.StatusIcon(e.Status)"></i> @e.Status</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,51 @@
+@model List<ResultItem>
+@{
+    ViewData["Title"] = "My results";
+    var podiums = Model.Count(r => r.FinishPosition <= 3);
+}
+
+<div class="container py-4">
+    <h1 class="rd-heading mb-1">My results</h1>
+    <p class="text-muted mb-4">Your race history across every event you've finished.</p>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-stopwatch"></i>
+            <h2 class="rd-heading">No results yet</h2>
+            <p class="text-muted">Results appear here once an organiser has captured your finish time.</p>
+            <a class="btn btn-rd" asp-controller="MyEnrolments" asp-action="Index">See my entries</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3"><div class="stat-tile"><span class="stat-number">@Model.Count</span><span class="stat-label">Races finished</span></div></div>
+            <div class="col-6 col-md-3"><div class="stat-tile"><span class="stat-number">@ViewHelpers.Ordinal(Model.Min(r => r.FinishPosition))</span><span class="stat-label">Best finish</span></div></div>
+            <div class="col-6 col-md-3"><div class="stat-tile"><span class="stat-number">@podiums</span><span class="stat-label">Podium finishes</span></div></div>
+        </div>
+
+        <div class="table-responsive rd-panel">
+            <table class="table rd-table align-middle mb-0">
+                <thead>
+                    <tr><th>Event</th><th>Date</th><th>Category</th><th>Finish time</th><th>Position</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td><a class="fw-semibold" asp-controller="Events" asp-action="Details" asp-route-id="@r.EventId">@r.EventName</a></td>
+                            <td>@ViewHelpers.ShortDate(r.EventDate)</td>
+                            <td>@r.CategoryName</td>
+                            <td class="time-cell">@ViewHelpers.FormatTime(r.FinishTime)</td>
+                            <td>
+                                <span class="position-badge @ViewHelpers.PodiumClass(r.FinishPosition)">@ViewHelpers.Ordinal(r.FinishPosition)</span>
+                                <span class="text-muted small ms-1">out of @r.TotalFinishers @(r.TotalFinishers == 1 ? "finisher" : "finishers")</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
