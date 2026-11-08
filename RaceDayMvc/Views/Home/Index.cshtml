@@ -1,0 +1,87 @@
+@model EventListViewModel
+@{
+    ViewData["Title"] = "Events";
+    var loggedIn = Context.Session.GetInt32(SessionKeys.UserId) is not null;
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var firstName = (Context.Session.GetString(SessionKeys.DisplayName) ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+}
+
+<section class="hero">
+    <div class="container hero-inner">
+        <span class="hero-kicker">South Africa's road events</span>
+        @if (loggedIn && !string.IsNullOrEmpty(firstName))
+        {
+            <h1>Ready to race, <span class="hl">@firstName</span>?</h1>
+        }
+        else
+        {
+            <h1>Find your next <span class="hl">finish line</span></h1>
+        }
+        <p class="lead">Browse upcoming runs, walks and rides. Enter in a couple of clicks and keep every result in one place.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="#events" class="btn btn-rd btn-lg">Browse events</a>
+            @if (!loggedIn)
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg">Create a free account</a>
+            }
+        </div>
+    </div>
+</section>
+
+<div class="container py-4" id="events">
+    <form method="get" asp-controller="Home" asp-action="Index" class="filter-bar">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label" for="eventType">Type</label>
+                <select id="eventType" name="eventType" class="form-select">
+                    <option value="">All types</option>
+                    @foreach (var type in Model.EventTypes)
+                    {
+                        <option value="@type.TypeName" selected="@(string.Equals(type.TypeName, Model.EventType, StringComparison.OrdinalIgnoreCase))">@type.TypeName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="location">Location</label>
+                <input id="location" name="location" class="form-control" value="@Model.Location" placeholder="e.g. Cape Town" />
+            </div>
+            <div class="col-md-3">
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="upcomingOnly" name="upcomingOnly" value="true" checked="@Model.UpcomingOnly" />
+                    <input type="hidden" name="upcomingOnly" value="false" />
+                    <label class="form-check-label" for="upcomingOnly">Upcoming only</label>
+                </div>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-rd flex-fill">Filter</button>
+                <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index" title="Reset filters"><i class="bi bi-arrow-counterclockwise"></i></a>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.LoadError is not null)
+    {
+        <div class="alert alert-warning mt-4"><i class="bi bi-exclamation-triangle-fill me-2"></i>@Model.LoadError</div>
+    }
+    else if (!Model.Events.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-flag-fill"></i>
+            <h2 class="rd-heading">No events found</h2>
+            <p class="text-muted">Nothing matches those filters. Try widening your search.</p>
+            <a class="btn btn-rd" asp-controller="Home" asp-action="Index">Show all upcoming events</a>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted mt-4 mb-3">@Model.Events.Count @(Model.Events.Count == 1 ? "event" : "events")</p>
+        <div class="row g-4">
+            @foreach (var ev in Model.Events)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <partial name="_EventCard" model="ev" />
+                </div>
+            }
+        </div>
+    }
+</div>

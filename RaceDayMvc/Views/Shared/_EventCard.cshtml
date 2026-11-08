@@ -1,0 +1,27 @@
+@model EventSummary
+
+<article class="event-card">
+    <a class="event-banner @ViewHelpers.TypeClass(Model.EventTypeName)" asp-controller="Events" asp-action="Details" asp-route-id="@Model.EventId" aria-label="View @Model.Name">
+        @if (!string.IsNullOrEmpty(Model.BannerImageUrl))
+        {
+            <img src="@Model.BannerImageUrl" alt="" loading="lazy" />
+        }
+        else
+        {
+            <i class="bi @ViewHelpers.TypeIcon(Model.EventTypeName) banner-icon"></i>
+        }
+        <span class="type-chip"><i class="bi @ViewHelpers.TypeIcon(Model.EventTypeName)"></i> @Model.EventTypeName</span>
+    </a>
+    <div class="event-body">
+        <h3 class="event-title">@Model.Name</h3>
+        <ul class="meta-list">
+            <li><i class="bi bi-calendar-event"></i> @ViewHelpers.EventDate(Model.EventDate)</li>
+            <li><i class="bi bi-geo-alt-fill"></i> @Model.Location</li>
+            <li><i class="bi bi-signpost-split-fill"></i> @Model.DistanceKm.ToString("0.##") km</li>
+        </ul>
+        <div class="event-footer">
+            <span class="entered"><i class="bi bi-people-fill"></i> @Model.EnrolmentCount entered</span>
+            <a class="btn btn-sm btn-rd" asp-controller="Events" asp-action="Details" asp-route-id="@Model.EventId">View event</a>
+        </div>
+    </div>
+</article>
