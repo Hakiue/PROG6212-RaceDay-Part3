@@ -47,7 +47,7 @@ Enrolment statuses are colour coded: green Confirmed, amber Pending, red Cancell
 - .NET SDK 9 or newer (the projects target `net9.0`)
 - SQL Server Express (instance `SQLEXPRESS`) or any SQL Server; edit `RaceDayApi/appsettings.json` if yours differs
 - Docker Desktop (for the container)
-- Optional: an Azure Storage account (or the Azurite emulator) for image uploads
+- An Azure Storage account for image uploads (the Azurite emulator also works for local testing)
 
 ## Run it locally
 
@@ -78,7 +78,7 @@ Open http://localhost:5100.
 
 ## Azure Blob Storage setup
 
-Image uploads need a storage connection string. **Never commit it.** Store it with user-secrets:
+Image uploads are stored in a private container (`raceday-images`) in an **Azure Storage account** (Standard, locally-redundant storage). This project was tested against a real Azure Storage account. The API needs that account's connection string. **Never commit it.** Store it with user-secrets:
 
 ```powershell
 dotnet user-secrets set "BlobStorage:ConnectionString" "YOUR-CONNECTION-STRING" --project RaceDayApi
@@ -88,7 +88,7 @@ or set the environment variable `BlobStorage__ConnectionString` before starting 
 
 The API creates the private container `raceday-images` on first upload. Without a connection string the upload endpoints return 503, the MVC app shows "image storage isn't set up" and everything else keeps working.
 
-Local alternative without an Azure account (Azurite emulator):
+Alternative for local testing without an Azure account (Azurite emulator):
 
 ```powershell
 docker run -d --name azurite -p 10000:10000 mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0
