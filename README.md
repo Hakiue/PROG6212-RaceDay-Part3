@@ -8,7 +8,7 @@ RaceDay is a web-based event management system for South African road running, w
 | 2 | ASP.NET Core Web API (Code-First EF Core, SQL Server), Swagger, xUnit tests |
 | **3** | **ASP.NET Core MVC front end, Azure Blob Storage inside the API, Docker** |
 
-- **YouTube video (unlisted):** `PASTE LINK HERE`
+- **YouTube video (unlisted):** https://youtu.be/GxLGzUQKxug
 - **CI status:** ![CI screenshot](docs/ci-success-screenshot.png)
 
 ## The two roles
